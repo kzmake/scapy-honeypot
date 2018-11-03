@@ -23,6 +23,10 @@ def find_tcp_packet(packet: Packet):
 
     print(f"[Recv sniffed packet: {flags}] {ip.src}:{tcp.sport} -> {ip.dst}:{tcp.dport}")
 
+    # データもってたら表示してみる
+    if packet.haslayer(Raw):
+        packet[Raw].show()
+
     if flags == "S":
         i = IP(src=ip.dst, dst=ip.src)
         t = TCP(sport=tcp.dport, dport=tcp.sport, flags='SA', seq=random.randint(1, 45536), ack=(tcp.seq + 1))
@@ -37,14 +41,13 @@ def find_tcp_packet(packet: Packet):
         frame = i / t
         send(frame, verbose=False)
 
-        print("[Send dummy packet: ACK]", i.src, t.sport, " -> ", i.dst, t.dport)
-
-    # データもってたら表示してみる
-    if packet.haslayer(Raw):
-        packet[Raw].show()
+        print(f"[Send dummy packet: ACK] {i.src}:{t.sport} -> {i.dst}:{t.dport}")
 
 
 if __name__ == "__main__":
+    # sniff filter
+    print(f"Filter: TCP and IpAddress: {TARGET_IP_ADDRESS}")
+
     # フィルタ作成
     packet_filter = lambda p: is_tcp_packet(p) and has_ip_address(p, TARGET_IP_ADDRESS)
 
