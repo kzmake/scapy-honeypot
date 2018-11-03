@@ -46,7 +46,7 @@ def find_tcp_packet(packet: Packet):
 
 if __name__ == "__main__":
     # フィルタ作成
-    packet_filter = lambda p: is_tcp_packet(p) and has_ip_address(p, IP_ADDRESS)
+    packet_filter = lambda p: is_tcp_packet(p) and has_ip_address(p, TARGET_IP_ADDRESS)
 
     # sniffing用Thread作成・実施
     sniffer = Sniffer(prn=find_tcp_packet, packet_filter=packet_filter)
