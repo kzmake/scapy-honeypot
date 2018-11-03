@@ -23,14 +23,16 @@ target     prot opt source               destination
 DROP       tcp  --  anywhere             anywhere             tcp flags:RST/RST
 ```
 
+## ssh で接続するには？
+
+スニッフィング対象ではないIpAddressから接続すること or Ipv6経由で接続すること
+
 ## .env 設定
 
 * IP_ADDRESS にスニッフィング対象のIpAddressを設定
-* SSH_PORT スニッフィング対象外のPortを設定
 
 ```sh
-IP_ADDRESS=TARGET_IP_ADDRESS
-SSH_PORT=YOUR_SSH_PORT
+IP_ADDRESS=スニッフィング対象のIpAddress
 ```
 
 ## sniffing
