@@ -33,20 +33,6 @@ def has_ip_address(packet: Packet, ip_address: str) -> bool:
     return ip_address in (i.src, i.dst)
 
 
-def has_port(packet: Packet, port: int) -> bool:
-    """パケットの sport/dport が Port かを判定する.
-
-    Args:
-        packet: scapy で取得したパケット.
-        port: Port.
-
-    Returns:
-        パケットの sport/dport が指定された Port であれば True, そうでなければ False を返却する.
-    """
-    t = packet[TCP]
-    return port in (t.sport, t.dport)
-
-
 def make_filter(packet: Packet) -> bool:
     """パケットをスニッフィングするためのフィルターを作成する.
 
@@ -56,7 +42,7 @@ def make_filter(packet: Packet) -> bool:
     Returns:
         フィルタ対象のパケットであれば True, そうでなければ False を返却する.
     """
-    return is_tcp_packet(packet) and has_ip_address(packet, IP_ADDRESS) and not has_port(packet, SSH_PORT)
+    return is_tcp_packet(packet) and has_ip_address(packet, IP_ADDRESS)
 
 
 def find_packet(packet: Packet):
