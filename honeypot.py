@@ -4,48 +4,12 @@
 from scapy.all import *
 from scapy.layers.inet import IP, TCP, Raw
 
+from filter import is_tcp_packet, has_ip_address
 from settings import *
+from sniffer import Sniffer
 
 
-def is_tcp_packet(packet: Packet) -> bool:
-    """TCPパケットかを判定する.
-
-    Args:
-        packet: scapy で取得したパケット.
-
-    Returns:
-        TCPパケットであれば True, そうでなければ False を返却する.
-    """
-    return packet.haslayer(IP) and packet.haslayer(TCP)
-
-
-def has_ip_address(packet: Packet, ip_address: str) -> bool:
-    """パケットの src/dst の IpAddress が ip_address かを判定する.
-
-    Args:
-        packet: scapy で取得したパケット.
-        ip_address: IpAddress.
-
-    Returns:
-        パケットの src/dst が指定された IpAddress であれば True, そうでなければ False を返却する.
-    """
-    i = packet[IP]
-    return ip_address in (i.src, i.dst)
-
-
-def make_filter(packet: Packet) -> bool:
-    """パケットをスニッフィングするためのフィルターを作成する.
-
-    Args:
-        packet: scapy で取得したパケット.
-
-    Returns:
-        フィルタ対象のパケットであれば True, そうでなければ False を返却する.
-    """
-    return is_tcp_packet(packet) and has_ip_address(packet, IP_ADDRESS)
-
-
-def find_packet(packet: Packet):
+def find_tcp_packet(packet: Packet):
     """スニッフィングしたパケットを処理する.
 
     Args:
@@ -80,5 +44,10 @@ def find_packet(packet: Packet):
         packet[Raw].show()
 
 
-# sniffing 開始
-sniff(prn=find_packet, lfilter=make_filter, store=0)
+if __name__ == "__main__":
+    # フィルタ作成
+    packet_filter = lambda p: is_tcp_packet(p) and has_ip_address(p, IP_ADDRESS)
+
+    # sniffing用Thread作成・実施
+    sniffer = Sniffer(prn=find_tcp_packet, packet_filter=packet_filter)
+    sniffer.run()
