@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
 
 import hashlib
 
@@ -9,6 +8,62 @@ from scapy.layers.inet import IP, TCP, Raw
 from filter import is_tcp_packet, has_ip_address
 from settings import *
 from sniffer import Sniffer
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('honeypot')
+
+if LOGGER == 'fluent':
+    from fluent import handler
+    import msgpack
+    from io import BytesIO
+
+    def overflow_handler(pendings):
+        unpacker = msgpack.Unpacker(BytesIO(pendings))
+        for unpacked in unpacker:
+            print(unpacked)
+
+
+    fluent_format = {
+        'host': '%(hostname)s',
+        'where': '%(module)s.%(funcName)s',
+        'type': '%(levelname)s',
+        'stack_trace': '%(exc_text)s'
+    }
+
+    h = handler.FluentHandler('pot.packet', host=FLUENT_HOST, port=FLUENT_PORT, buffer_overflow_handler=overflow_handler)
+    formatter = handler.FluentRecordFormatter(fluent_format)
+    h.setFormatter(formatter)
+    logger.addHandler(h)
+
+
+def logging_packet(packet: Packet):
+    ip = packet[IP]
+    tcp = packet[TCP]
+    flags = tcp.flags
+
+    if ip.src == TARGET_IP_ADDRESS:
+        gid = hashlib.sha256(f"{ip.src}:{tcp.sport} > {ip.dst}:{tcp.dport}".encode()).hexdigest()
+    else:
+        gid = hashlib.sha256(f"{ip.dst}:{tcp.dport} > {ip.src}:{tcp.sport}".encode()).hexdigest()
+
+    if packet.haslayer(Raw):
+        payload = str(packet[Raw].load)
+    else:
+        payload = ''
+
+    logger.info(
+        {
+            'gid': str(gid),
+            'recv_timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
+            'country_code': 'JP',
+            'flag': str(flags),
+            'src': str(ip.src),
+            'dst': str(ip.dst),
+            'sport': str(tcp.sport),
+            'dport': str(tcp.dport),
+            'summary': str(packet.summary()),
+            'payload': payload
+        })
 
 
 def find_tcp_packet(packet: Packet):
@@ -23,16 +78,7 @@ def find_tcp_packet(packet: Packet):
     tcp = packet[TCP]
     flags = tcp.flags
 
-    if ip.src == TARGET_IP_ADDRESS:
-        uid = hashlib.sha256(f"{ip.src}:{tcp.sport} > {ip.dst}:{tcp.dport}".encode()).hexdigest()
-        print(f"[Packet] {uid} Send {packet.summary()}")
-    else:
-        uid = hashlib.sha256(f"{ip.dst}:{tcp.dport} > {ip.src}:{tcp.sport}".encode()).hexdigest()
-        # データもってたら表示してみる
-        if packet.haslayer(Raw):
-            print(f"[Packet] {uid} Recv {packet.summary()} {packet[Raw].load}")
-        else:
-            print(f"[Packet] {uid} Recv {packet.summary()}")
+    logging_packet(packet)
 
     if flags == "S":
         i = IP(src=ip.dst, dst=ip.src)
